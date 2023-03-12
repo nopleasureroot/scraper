@@ -9,4 +9,7 @@ spring:
   jpa:
     hibernate.ddl-auto: update
     generate-ddl: true
-    show-sql: true
+
+clients:
+  lamoda:
+    base-url: https://www.lamoda.ru/api/v1/product/get

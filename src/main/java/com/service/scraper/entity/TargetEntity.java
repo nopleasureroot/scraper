@@ -1,4 +1,7 @@
-package com.service.scraper.entities;
+package com.service.scraper.entity;
+
+import java.sql.Timestamp;
+import java.util.UUID;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -9,25 +12,23 @@ import lombok.Data;
 public class TargetEntity {
     @Id
     @Column(name = "uuid")
-    String uuid;
-    @Column(name = "url")
+    private UUID uuid;
 
-    private String url;
+    @Column(name = "product_id")
+    private String productId;
+
     @Column(name = "state")
-
     private String state;
+
     @Column(name = "created_at")
+    private Timestamp createdAt;
 
-    private String created_at;
     @Column(name = "updated_at")
+    private Timestamp updatedAt;
 
-    private String updated_at;
     @Column(name = "rule_id")
+    private UUID ruleId;
 
-    private String ruleId;
     @Column(name = "user_id")
-
-    private String userId;
-
-
+    private UUID userId;
 }
