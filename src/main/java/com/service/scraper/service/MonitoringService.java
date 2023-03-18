@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,6 +27,7 @@ public class MonitoringService {
     private List<TargetEntity> activeTargets = new ArrayList<>();
     private final TargetRepository targetRepository;
     private final LamodaClient client;
+    private final KafkaTemplate<String, SendJsonResponseEvent> kafkaTemplate;
 
     public void addTarget(TargetEntity entity) {
         activeTargets.add(entity);
@@ -82,14 +84,18 @@ public class MonitoringService {
                 SendJsonResponseEvent jsonResponseEvent = new SendJsonResponseEvent();
                 jsonResponseEvent.setUuid(target.getUuid());
                 jsonResponseEvent.setResponseBody(productData.getBody());
-
+                sendMessage(jsonResponseEvent);
                 try {
-                    Thread.sleep(10000);
+                    Thread.sleep(60000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
 
             }
         }
+    }
+
+    public void sendMessage(SendJsonResponseEvent msg) {
+        kafkaTemplate.send("handler-service", msg);
     }
 }

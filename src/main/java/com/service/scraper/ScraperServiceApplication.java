@@ -8,10 +8,10 @@ import org.springframework.kafka.annotation.EnableKafka;
 @SpringBootApplication
 @EnableFeignClients
 @EnableKafka
-public class ScraperSeviceApplication {
+public class ScraperServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ScraperSeviceApplication.class, args);
+		SpringApplication.run(ScraperServiceApplication.class, args);
 	}
 
 }

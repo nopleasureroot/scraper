@@ -1,0 +1,7 @@
+#
+# Package stage
+#
+FROM openjdk:17
+COPY ./target/ScraperService.jar ./target/ScraperService.jar
+EXPOSE 8083
+ENTRYPOINT ["java","-jar","./target/ScraperService.jar"]
