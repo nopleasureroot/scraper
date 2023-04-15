@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class TargetDTO {
+    private UUID targetUUID;
     private String productId;
-    private UUID ruleId;
     private UUID userId;
 }

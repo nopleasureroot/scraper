@@ -20,5 +20,6 @@ public interface TargetRepository extends JpaRepository<TargetEntity, UUID> {
     List<TargetEntity> findAllByState(String state);
 
 
+
 }
 

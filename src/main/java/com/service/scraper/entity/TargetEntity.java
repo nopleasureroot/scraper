@@ -26,8 +26,8 @@ public class TargetEntity {
     @Column(name = "updated_at")
     private Timestamp updatedAt;
 
-    @Column(name = "rule_id")
-    private UUID ruleId;
+    @Column(name = "rule_value")
+    private Long ruleValue;
 
     @Column(name = "user_id")
     private UUID userId;

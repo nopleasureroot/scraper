@@ -16,7 +16,9 @@ import com.service.scraper.repository.TargetRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TargetService {
@@ -25,25 +27,27 @@ public class TargetService {
     private final TargetMapper targetMapper;
     private final TriConsumer<TargetState, TargetEntity, MonitoringService> executeToMonitoring =
             (state, target, monitoringService) -> {
-        switch (state) {
-            case ACTIVE -> monitoringService.addTarget(target);
-            case STOPPED -> monitoringService.deleteTarget(target);
-        }
-    };
+                switch (state) {
+                    case ACTIVE -> monitoringService.addTarget(target);
+                    case STOPPED -> monitoringService.deleteTarget(target);
+                }
+            };
 
     public void create(TargetDTO targetDTO) {
-        Optional<TargetEntity> possibleTarget = targetRepository
-                .findTargetEntitiesByProductIdAndUserId(targetDTO.getProductId(), targetDTO.getUserId());
-
-        if (possibleTarget.isPresent()) {
-            throw new TargetAlreadyExistException(possibleTarget.get().getUuid());
-        }
-
-
-        TargetEntity targetEntity = targetMapper.toNewEntity(targetDTO);
-        targetRepository.save(targetEntity);
-
-        monitoringService.addTarget(targetEntity);
+//        Optional<TargetEntity> possibleTarget = targetRepository
+//                .findTargetEntitiesByProductIdAndUserId(targetDTO.getProductId(), targetDTO.getUserId());
+//
+//        if (possibleTarget.isPresent()) {
+//            throw new TargetAlreadyExistException(possibleTarget.get().getUuid());
+//        }
+//
+//        targetRepository.save(targetEntity);
+        targetRepository.findByUuid(targetDTO.getTargetUUID()).ifPresentOrElse(
+                monitoringService::addTarget,
+                () -> {
+                    throw new TargetNotFoundException(targetDTO.getTargetUUID());
+                }
+        );
     }
 
     @Transactional
@@ -51,7 +55,9 @@ public class TargetService {
         targetRepository
                 .findByUuid(uuid)
                 .ifPresentOrElse((monitoringService::deleteTarget),
-                        () -> { throw new TargetNotFoundException(uuid); });
+                        () -> {
+                            throw new TargetNotFoundException(uuid);
+                        });
 
     }
 
