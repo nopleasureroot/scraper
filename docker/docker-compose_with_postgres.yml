@@ -43,12 +43,53 @@ services:
 
 
   app-scraper:
-    image: scraper-service:1
+    image: scraper-service:1.0.0
     ports:
       - "8083:8083"
     environment:
       BOOTSTRAP_HOST: kafka:9092
       JDBC_HOST:  jdbc:postgresql://db:5432/postgres
+    depends_on:
+      - kafka-ui
+      - kafka
+      - zookeeper
+      - postgres
+
+  app-messenger:
+    image: messenger-service:1.0.0
+    ports:
+      - "8082:8082"
+    environment:
+      BOOTSTRAP_HOST: kafka:9092
+    depends_on:
+      - kafka-ui
+      - kafka
+      - zookeeper
+
+  app-handler:
+    image: handler-service:1.0.0
+    ports:
+      - "8084:8084"
+    environment:
+      BOOTSTRAP_HOST: kafka:9092
+      MESSAGE_CONSUMER_GROUP: app.2
+      DEFAULT_PRODUCER_TOPIC_NAME: handler_analyzer_processed-data-event
+      DEFAULT_CONSUMER_TOPIC_NAME: scraper_handler_row-data-event
+    depends_on:
+      - kafka-ui
+      - kafka
+      - zookeeper
+
+  app-analyzer:
+    image: analyzer-service:1.0.0
+    ports:
+      - "8085:8085"
+    environment:
+      BOOTSTRAP_HOST: kafka:9092
+      MESSAGE_CONSUMER_GROUP: app.2
+      DEFAULT_PRODUCER_TOPIC_NAME: analyzed-messages
+      DEFAULT_CONSUMER_TOPIC_NAME: handler_analyzer_processed-data-event
+      POSTGRES_CONNECTION_URL:  jdbc:postgresql://db:5432/postgres
     depends_on:
       - kafka-ui
       - kafka

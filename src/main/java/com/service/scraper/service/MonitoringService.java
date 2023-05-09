@@ -2,6 +2,7 @@ package com.service.scraper.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class MonitoringService {
 
     public void addTarget(TargetEntity entity) {
         activeTargets.add(entity);
-        TargetThread targetThread = new TargetThread(entity);
+        TargetThread targetThread = new TargetThread(entity.getUuid());
         targetThread.start();
 
     }
@@ -52,17 +53,17 @@ public class MonitoringService {
         activeTargets = targetRepository.findAllByState(TargetState.ACTIVE.toString());
 
         for (TargetEntity target : activeTargets) {
-            TargetThread targetThread = new TargetThread(target);
+            TargetThread targetThread = new TargetThread(target.getUuid());
             targetThread.start();
         }
     }
 
     class TargetThread extends Thread {
 
-        private final TargetEntity target;
+        private final UUID uuid;
 
-        TargetThread(TargetEntity target) {
-            this.target = target;
+        TargetThread(UUID uuid) {
+            this.uuid = uuid;
 
             init();
         }
@@ -73,8 +74,8 @@ public class MonitoringService {
 
         @Override
         public void run() {
-            while (TargetState.ACTIVE.toString().equals(target.getState())) {
-
+            while (TargetState.ACTIVE.toString().equals(targetRepository.findByUuid(uuid).get().getState())) {
+                TargetEntity target = targetRepository.findByUuid(uuid).get();
                 ResponseEntity<JsonNode> productData = client.getProductData(target.getProductId());
 
                 if (!productData.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
@@ -96,6 +97,6 @@ public class MonitoringService {
     }
 
     public void sendMessage(SendJsonResponseEvent msg) {
-        kafkaTemplate.send("handler-service", msg);
+        kafkaTemplate.send("scraper_handler_row-data-event", msg);
     }
 }
