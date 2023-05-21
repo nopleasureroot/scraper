@@ -1,4 +1,4 @@
-version: "3"
+version: "2"
 
 services:
   postgres:
@@ -54,6 +54,7 @@ services:
       - kafka
       - zookeeper
       - postgres
+    hostname: scraper
 
   app-messenger:
     image: messenger-service:1.0.0
@@ -94,4 +95,16 @@ services:
       - kafka-ui
       - kafka
       - zookeeper
+      - postgres
+
+  app-tg-bot:
+    image: tg-bot:1.0.0
+    ports:
+      - 8086:8086
+    environment:
+      JDBC_HOST: jdbc:postgresql://db:5432/postgres
+      BOT_NAME: FollowChangesBot
+      TELEGRAM_BOT_TOKEN: 6114311947:AAHoPCfjTFXvkuZe-P8QMRxX3FcHrnAzJ9w
+      SCRAPER_HOST: http://scraper:8083/targets
+    depends_on:
       - postgres

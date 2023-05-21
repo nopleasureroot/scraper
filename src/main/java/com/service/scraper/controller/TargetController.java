@@ -49,9 +49,7 @@ public class TargetController {
      *
      * @param uuid Id таргета который нало запустить
      */
-    @GetMapping(value = "/{uuid}:start",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{uuid}:start")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void startTarget(@PathVariable("uuid") UUID uuid) {
         targetService.update(uuid, TargetState.ACTIVE);
@@ -63,9 +61,7 @@ public class TargetController {
      *
      * @param uuid Id таргета который нало остановить
      */
-    @GetMapping(value = "/{uuid}:stop",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{uuid}:stop")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void stopTarget(@PathVariable("uuid") UUID uuid) {
         targetService.update(uuid, TargetState.STOPPED);
